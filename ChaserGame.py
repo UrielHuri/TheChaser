@@ -1,6 +1,8 @@
 import pandas as pd
 from Question import *
 
+INVALID_INPUT = 'INVALID INPUT'
+
 def setChaserDiff(level):
 	return 100-(4-level)*10
 
@@ -34,7 +36,6 @@ class Board:
 		levels_list[self.chaser] = "Chaser"
 		levels_list[self.player] = "Player"
 		self.board = pd.DataFrame.from_dict({'Board' : levels_list})
-		self.board = self.board.reindex(index=self.board.index[::-1])
 		return self.board
 
 	def __repr__(self):
@@ -55,6 +56,13 @@ class Board:
 			print(f'{self.winner} Won!')
 			return True
 		return False
+
+	def chaser_offers(self,amount):
+		self.get_board()
+		change_amount_by_ratio = 2
+		self.board.loc[self.player-1,'Board'] = amount*change_amount_by_ratio
+		self.board.loc[self.player+1,'Board'] = amount//change_amount_by_ratio
+		return self.board
 
 def getPlayerAnswer(quetion):
 	print(quetion)
@@ -78,10 +86,11 @@ def initialization():
 	elif wanna_play == 'N':
 		return False
 	else:
-		print('UNVALID INPUT')
+		print(INVALID_INPUT)
 		return initialization()
 
 def phaseOne(player):
+	print("Welcome to phase one of The Chaser!\nLet's start:\n")
 	REQUESTED_QUESTIONS = 3
 	RIGHT_ANSWER_REWARD = 5000
 	RIGHT_ANSWER_ANNOUNCE = 'Nice one! your answer is right and you get {}$.\nYour current accunt status is {}.'
@@ -102,6 +111,30 @@ def phaseOne(player):
 		print("You haven't got any right answer...\nYOU LOST and you are a loser.")
 		return initialization()
 
+def handlingPlayerChoise(choise,player,board):
+	if choise not in ['0','1','2']:
+		print(INVALID_INPUT)
+		return phaseTwo(player,board)
+	if choise == '1':
+		player.deposite(-player.account/2)
+		board.player += 1
+	elif choise == '2':
+		player.deposite(player.account)
+		board.player -= 1
+
+
+def phaseTwo(player, board):
+	print("Nice! you made it to phase #2!")
+	RATIO_OF_AMOUNT_CHANGE = 2
+	print("You can start 2 steps away from the chaser with your current amount: {}.".format(player.get_account()))
+	print("However, the chaser is willing to offer you two alternatives:")
+	print("(1) You can go one step DOWN and play for HALF of the amount you have now, which is {}$".format(
+		RATIO_OF_AMOUNT_CHANGE // player.account))
+	print("(2) You can go one step UP and play on TWICE the amount you have now, which is {}$".format(
+		RATIO_OF_AMOUNT_CHANGE * player.account))
+	print(board.chaser_offers(player.account))
+	choise = input("SO what will you choose?\n(enter 0 to continue with your current amount)\n")
+	handlingPlayerChoise(choise,player,board)
 
 
 
