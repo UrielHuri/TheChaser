@@ -47,10 +47,23 @@ class Question:
 		q_dict['answer'] = self.answer
 		return q_dict
 
+	def wrong_options(self):
+		q_dict = self.options.copy()
+		q_dict.pop(self.answer)
+		return q_dict
+
 	def is_right(self,answer):
 		if self.answer == answer:
 			return True
 		return False
+
+	def use_lifebuoy(self):
+		wrong_opts = list(self.wrong_options().keys())
+		option_index = rint(0,len(wrong_opts)-1)
+		options = sorted([self.options[self.answer],self.options[wrong_opts[option_index]]])
+		print(self.question)
+		for opt in options:
+			print(opt)
 
 def createDBFromJson(q_file = 'QDB.json'):
 	with open(q_file) as file:
