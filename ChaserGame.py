@@ -7,19 +7,24 @@ def setChaserDiff(level):
 	return 100-(4-level)*10
 
 class Player:
-	def __init__(self,name,account=0):
+	def __init__(self,name,account=0,lifebuoy = True):
 		self.name = name
 		self.account = account
+		self.lifebuoy = lifebuoy
 		self.availble_questions = createDBFromJson()
 
 	def deposite(self,amount):
 		self.account += amount
 
 	def use_question(self,q_index):
-		self.availble_questions.pop(q_index)
+		return self.availble_questions.pop(q_index)
 
 	def get_account(self):
 		return f'{self.account}$'
+
+	def use_lifebuoy(self):
+		self.lifebuoy = False
+
 
 class Board:
 	def __init__(self,levels = 8,player = 3,chaser = 0):
@@ -33,8 +38,8 @@ class Board:
 
 	def get_board(self):
 		levels_list = ['']*self.levels
-		levels_list[self.chaser] = "Chaser"
 		levels_list[self.player] = "Player"
+		levels_list[self.chaser] = "Chaser"
 		self.board = pd.DataFrame.from_dict({'Board' : levels_list})
 		return self.board
 
@@ -53,8 +58,7 @@ class Board:
 		elif self.player == -1:
 			self.winner = 'Player'
 		if self.winner:
-			print(f'{self.winner} Won!')
-			return True
+			return f'{self.winner} Won!'
 		return False
 
 	def chaser_offers(self,amount):
@@ -66,6 +70,7 @@ class Board:
 
 def getPlayerAnswer(quetion):
 	print(quetion)
+	print('(Enter L to use 50/50 lifebuoy)')
 	return input('Answer: ').upper()
 
 def getChaserAnswer(question, rightness_per = 75):
@@ -90,7 +95,7 @@ def initialization():
 		return initialization()
 
 def phaseOne(player):
-	print("Welcome to phase one of The Chaser!\nLet's start:\n")
+	print("Welcome to phase #1 of The Chaser!\nLet's start:\n")
 	REQUESTED_QUESTIONS = 3
 	RIGHT_ANSWER_REWARD = 5000
 	RIGHT_ANSWER_ANNOUNCE = 'Nice one! your answer is right and you get {}$.\nYour current accunt status is {}.'
@@ -123,6 +128,28 @@ def handlingPlayerChoise(choise,player,board):
 		board.player -= 1
 
 
+def theChase(player,board):
+	while not board.check_finish():
+		q_num = getQuestionNum(player.availble_questions)
+		q = player.use_question(q_num)
+		player_input = getPlayerAnswer(q)
+		if player_input == 'L':
+			player.use_lifebuoy(q)
+			player_input = getPlayerAnswer(q.use_lifebuoy())
+		player_ans = q.is_right(player_input)
+		chaser_ans = q.is_right(q, getChaserAnswer(q))
+		if player_ans:
+			print('Player was Right!')
+			board.update_player()
+		else:
+			print('Player was Wrong...')
+		if chaser_ans:
+			print('Chaser was Right!')
+			board.update_chaser()
+		else:
+			print('Chaser was Wrong...')
+		print(board.get_board())
+
 def phaseTwo(player, board):
 	print("Nice! you made it to phase #2!")
 	RATIO_OF_AMOUNT_CHANGE = 2
@@ -135,30 +162,5 @@ def phaseTwo(player, board):
 	print(board.chaser_offers(player.account))
 	choise = input("SO what will you choose?\n(enter 0 to continue with your current amount)\n")
 	handlingPlayerChoise(choise,player,board)
-
-
-
-
-
-
-
-
-
-
-
-def gameplay(board):
-	q = getQuestion()
-	showQuestion(q)
-	player_ans = checkAnswer(q,getPlayerAnswer())
-	chaser_ans = checkAnswer(q,getChaserAnswer(q))
-	if player_ans:
-		print('Player was Right!')
-		board.update_player()
-	else:
-		print('Player was Wrong...')
-	if chaser_ans:
-		print('Chaser was Right!')
-		board.update_chaser()
-	else:
-		print('Chaser was Wrong...')
 	print(board.get_board())
+	theChase(player,board)
