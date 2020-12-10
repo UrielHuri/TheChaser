@@ -1,4 +1,4 @@
-from random import randint as rint
+from random import randrange as rint
 
 class Question:
 	def __init__(self,question : str, options : dict, answer : str):
@@ -59,7 +59,7 @@ class Question:
 
 	def use_lifebuoy(self):
 		wrong_opts = list(self.wrong_options().keys())
-		option_index = rint(0,len(wrong_opts)-1)
+		option_index = rint(0,len(wrong_opts))
 		options = sorted([self.options[self.answer],self.options[wrong_opts[option_index]]])
 		print(self.question)
 		for opt in options:
@@ -75,7 +75,7 @@ def createDBFromJson(q_file = 'QDB.json'):
 	return db
 
 def getQuestionNum(db):
-	q_index = rint(0,len(db)-1)
+	q_index = rint(0,len(db))
 	return q_index
 
 
