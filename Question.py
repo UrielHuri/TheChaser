@@ -48,24 +48,44 @@ class Question:
 		return q_dict
 
 	def wrong_options(self):
+		"""
+		Get only the wrong answers of the quetion
+		:return: dict of answers
+		"""
 		q_dict = self.options.copy()
 		q_dict.pop(self.answer)
 		return q_dict
 
 	def is_right(self,answer):
+		"""
+		Check if given answer is right
+		:param answer: A/B/C/D (str)
+		:return: bool
+		"""
 		if self.answer == answer:
 			return True
 		return False
 
 	def use_lifebuoy(self):
+		"""
+		Returns the question with only the right answer and ont wrong answer
+		:return: str of question with 2 answers
+		"""
 		wrong_opts = list(self.wrong_options().keys())
 		option_index = rint(0,len(wrong_opts))
 		options = sorted([self.options[self.answer],self.options[wrong_opts[option_index]]])
-		print(self.question)
+		string = self.question
 		for opt in options:
-			print(opt)
+			string += '\n'
+			string += opt
+		return string
 
 def createDBFromJson(q_file = 'QDB.json'):
+	"""
+	Transforms questions file (as json) to list of Question objects
+	:param q_file: name of file with extension (str)
+	:return: db (list of Question)
+	"""
 	with open(q_file) as file:
 		q_dicts_list = eval(file.read())
 	db = list()
@@ -75,6 +95,11 @@ def createDBFromJson(q_file = 'QDB.json'):
 	return db
 
 def getQuestionNum(db):
+	"""
+	Returns random index of a Question from a DB
+	:param db: List
+	:return: int
+	"""
 	q_index = rint(0,len(db))
 	return q_index
 
