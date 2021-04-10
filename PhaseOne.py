@@ -1,11 +1,10 @@
 import tkinter as tk
 from Utils import WINDOW_WIDTH, WINDOW_HEIGHT
 
-WINDOW_TITLE = 'The Chaser'
-player_name = 'TEST'
+WINDOW_TITLE = 'PhaseOne: FirstCollection'
 
-class MainWindow:
-	def __init__(self):
+class PhaseOne:
+	def __init__(self,question_num = 1):
 		root = tk.Tk()
 		# set window properties
 		root.title(WINDOW_TITLE)
@@ -17,24 +16,9 @@ class MainWindow:
 		title = tk.Label(root)
 		title['background'] = 'black'
 		title['foreground'] = 'white'
-		title['text'] = 'The Chaser'
+		title['text'] = f'Question #{question_num}:'
 		title['font'] = ("Broadway", 50)
-		title.pack()
-
-		# name clause
-		name_label = tk.Label(root)
-		name_label['background'] = 'black'
-		name_label['foreground'] = 'white'
-		name_label['text'] = 'Enter your Name:'
-		name_label['font'] = ("Broadway", 25)
-		name_label.place(x=400, y=200, anchor='center')
-
-		global player_name
-		player_name = tk.Text(root)
-		player_name.place(x=800, y=200, anchor='center')
-		player_name['height'] = 1
-		player_name['width'] = 15
-		player_name['font'] = ("Broadway", 25)
+		title.pack(side='left')
 
 		# new game button
 		new_game_btn = tk.Button(root)
@@ -48,10 +32,5 @@ class MainWindow:
 		root.mainloop()
 
 def newGame():
-	global player_name
-	print(player_name.get('1.0',"end-1c"))
-	# from PhaseOne import PhaseOne
-	# new_game = PhaseOne()
-
-
-main = MainWindow()
+	print('PRESS')
+wind = PhaseOne()
